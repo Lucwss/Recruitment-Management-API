@@ -1,0 +1,15 @@
+services:
+  recruitment-management-database:
+    image: postgres:16-alpine
+    container_name: recruitment-management-database
+    ports:
+      - '5432:5432'
+    env_file:
+      - '../../.env'
+    networks:
+      - recruitment-management-network
+
+
+networks:
+  recruitment-management-network:
+    name: recruitment-management-network
