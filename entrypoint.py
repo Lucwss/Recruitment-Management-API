@@ -1,7 +1,11 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import uvicorn
+
+from infra.database.pgdatabase import init_db
 
 api_version = '/api/v1'
 
@@ -17,6 +21,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def startup() -> None:
+    init_db(app)
+
+app.add_event_handler('startup', startup)
 
 
 if __name__ == "__main__":

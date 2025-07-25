@@ -1,9 +1,11 @@
+from fastapi import FastAPI
 from tortoise.models import Model
 from tortoise import fields
 from uuid import UUID
 from datetime import datetime
 from enum import IntEnum, StrEnum
 import os
+from tortoise.contrib.fastapi import register_tortoise
 
 class Urgency(IntEnum):
     low = 0
@@ -51,3 +53,12 @@ TORTOISE_ORM = {
         }
     }
 }
+
+def init_db(app: FastAPI) -> None:
+    register_tortoise(
+        app,
+        db_url=os.environ.get("POSTGRES_URL"),
+        modules={"models": ["infra.database.pgdatabase"]},
+        generate_schemas=True,
+        add_exception_handlers=True,
+)
