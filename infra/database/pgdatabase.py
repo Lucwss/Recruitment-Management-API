@@ -44,7 +44,10 @@ TORTOISE_ORM = {
     "apps": {
         "models": {
             "default_connection": "default",
-            "models": "infra.database.pgdatabase",
+            "models": [
+                "infra.database.pgdatabase",
+                "aerich.models"
+            ],
         }
     }
 }
