@@ -23,11 +23,11 @@ class Vacancy(Model):
     sector: str = fields.CharField(max_length=255)
     manager: str = fields.CharField(max_length=255)
     salary_expectation: str = fields.CharField(max_length=255)
-    Urgency: Urgency = fields.IntEnumField(Urgency, "Urgency options")
-    Status: Status = fields.CharEnumField(Status, "Status options")
+    urgency: Urgency = fields.IntEnumField(Urgency, "Urgency options")
+    status: Status = fields.CharEnumField(Status, "Status options")
     start_date: datetime = fields.DatetimeField(auto_now=True)
-    end_date: datetime = fields.DatetimeField(auto_now=True)
-    notes: str = fields.CharField(max_length=255)
+    end_date: datetime = fields.DatetimeField(auto_now=True, null=True)
+    notes: str = fields.CharField(max_length=255, null=True)
 
 
 TORTOISE_ORM = {
