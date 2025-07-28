@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+from application.dto.vacancy import VacancyInput, VacancyOutput
+
+
 class IVacancyRepository(ABC):
     """
     Interface responsible for VacancyRepository methods.
@@ -11,7 +14,7 @@ class IVacancyRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def create_vacancy(self, vacancy_data: dict) -> dict:
+    async def create_vacancy(self, vacancy_data: VacancyInput) -> VacancyOutput:
         """ Create a new vacancy. """
         raise NotImplementedError()
 
