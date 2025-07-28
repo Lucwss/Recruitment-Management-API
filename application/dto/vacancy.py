@@ -1,9 +1,14 @@
+from enum import StrEnum
 from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from infra.database.pgdatabase import Urgency, Status
 from uuid import UUID
+
+class StatusToUpdate(StrEnum):
+    finished = "FINISHED"
+    canceled = "CANCELED"
 
 class VacancyInput(BaseModel):
     """
