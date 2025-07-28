@@ -34,8 +34,19 @@ class VacancyRepository(IVacancyRepository):
     async def update_vacancy(self, vacancy_id: str, vacancy_data: dict) -> dict:
         pass
 
-    async def delete_vacancy(self, vacancy_id: str) -> None:
-        pass
+    async def delete_vacancy(self, vacancy_id: str) -> bool:
+        found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
+
+        if not found_vacancy:
+            return False
+
+        try:
+            async with in_transaction():
+                await found_vacancy.delete()
+                return True
+        except Exception as e:
+            print(e)
+            return False
 
     async def list_vacancies(self, filters: dict = None) -> list:
         pass

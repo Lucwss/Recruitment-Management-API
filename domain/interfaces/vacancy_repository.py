@@ -24,7 +24,7 @@ class IVacancyRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def delete_vacancy(self, vacancy_id: str) -> None:
+    async def delete_vacancy(self, vacancy_id: str) -> bool:
         """ Delete a vacancy by its ID. """
         raise NotImplementedError()
 
