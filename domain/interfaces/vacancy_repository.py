@@ -19,7 +19,7 @@ class IVacancyRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def update_vacancy(self, vacancy_id: str, vacancy_data: dict) -> dict:
+    async def update_vacancy(self, vacancy_id: str, vacancy_data: VacancyInput) -> VacancyOutput | None:
         """ Update an existing vacancy. """
         raise NotImplementedError()
 

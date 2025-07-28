@@ -31,8 +31,35 @@ class VacancyRepository(IVacancyRepository):
 
 
 
-    async def update_vacancy(self, vacancy_id: str, vacancy_data: dict) -> dict:
-        pass
+    async def update_vacancy(self, vacancy_id: str, vacancy_data: VacancyInput) -> VacancyOutput | None:
+        found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
+
+        if found_vacancy:
+            try:
+                async with in_transaction():
+                    found_vacancy.description = vacancy_data.description
+                    found_vacancy.sector = vacancy_data.sector
+                    found_vacancy.manager = vacancy_data.manager
+                    found_vacancy.salary_expectation = vacancy_data.salary_expectation
+                    found_vacancy.urgency = vacancy_data.urgency
+                    found_vacancy.status = vacancy_data.status
+                    found_vacancy.start_date = vacancy_data.start_date
+                    found_vacancy.end_date = vacancy_data.end_date
+                    found_vacancy.notes = vacancy_data.notes
+
+                    await found_vacancy.save()
+
+                    updated_vacancy = await VacancyPydantic.from_tortoise_orm(found_vacancy)
+                    return VacancyOutput(**updated_vacancy.model_dump())
+
+
+            except Exception as e:
+                print(e)
+                return None
+
+        return None
+
+
 
     async def delete_vacancy(self, vacancy_id: str) -> bool:
         found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
