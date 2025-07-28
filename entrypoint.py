@@ -5,14 +5,23 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 import uvicorn
 
-from infra.database.pgdatabase import init_db
+from infra.database.pgdatabase import init_db, close_db
+from web.app.vacancies import vacancy_router
 
 api_version = '/api/v1'
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+    await close_db()
 
 app = FastAPI(
     title="Recruitment Management API",
     redirect_slashes=False,
+    lifespan=lifespan
 )
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,10 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def startup() -> None:
-    init_db(app)
-
-app.add_event_handler('startup', startup)
+app.include_router(vacancy_router, prefix=api_version)
 
 
 if __name__ == "__main__":
