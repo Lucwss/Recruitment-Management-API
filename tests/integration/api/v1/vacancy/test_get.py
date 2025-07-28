@@ -49,3 +49,20 @@ class TestGetVacancy:
         ]
         for field in required_fields:
             assert field in payload
+
+    async def test_list_vacancies(self):
+        pagination_params = {
+            "page": 1,
+            "page_size": 10,
+            "search": None
+        }
+
+        response = await self.http_client.get(f"/vacancy/", params=pagination_params)
+
+        assert response.status_code == 200
+
+        json_response: dict = response.json()
+
+        assert "status_code" in json_response
+        assert "payload" in json_response
+
