@@ -29,4 +29,5 @@ src_folder = "./."
 [tool.poetry.group.dev.dependencies]
 pytest-asyncio = "^1.1.0"
 httpx = "^0.28.1"
+faker = "^37.4.2"
 

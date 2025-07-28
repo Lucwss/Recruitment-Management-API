@@ -1,6 +1,9 @@
-
 import pytest
 from httpx import AsyncClient
+from faker import Faker
+import random
+
+from tests.integration.api.v1.vacancy.fake_data import generate_fake_vacancy_data
 
 
 @pytest.mark.asyncio(loop_scope="class")
@@ -8,19 +11,7 @@ class TestGetVacancy:
     http_client: AsyncClient = AsyncClient(base_url="http://0.0.0.0:8000/api/v1")
 
     async def test_get_vacancy(self):
-
-        payload_input = {
-            "description": "Test",
-            "sector": "test",
-            "manager": "manager",
-            "salary_expectation": 5000.00,
-            "urgency": 2,
-            "status": "IN_PROGRESS",
-            "start_date": "2023-10-01T00:00:00Z",
-            "end_date": None,
-            "notes": None
-
-        }
+        payload_input = generate_fake_vacancy_data()
 
         response = await self.http_client.post("/vacancy/", json=payload_input)
         assert response.status_code == 201
