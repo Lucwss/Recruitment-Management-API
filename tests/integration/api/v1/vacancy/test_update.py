@@ -34,7 +34,7 @@ class TestUpdateVacancy:
     async def test_update_vacancy(self):
         payload_input = generate_fake_vacancy_data()
 
-        response = await self.http_client.put(f"/vacancy/{self.vacancy_id}", json=payload_input)
+        response = await self.http_client.put(f"/vacancy/{self.vacancy_id}/", json=payload_input)
         assert response.status_code == 200
 
         json_response: dict = response.json()

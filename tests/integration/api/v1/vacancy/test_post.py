@@ -2,7 +2,7 @@
 import pytest
 from httpx import AsyncClient
 
-from tests.integration.api.v1.vacancy.fake_data import generate_fake_vacancy_data
+from tests.integration.api.v1.vacancy.fake_data import generate_fake_vacancy_data, generate_fake_data_simulation_input
 
 
 @pytest.mark.asyncio(loop_scope="class")
@@ -30,3 +30,13 @@ class TestPostVacancy:
         for field in required_fields:
             assert field in payload
 
+    async def test_simulate_costs(self):
+        payload_input = generate_fake_data_simulation_input()
+
+        response = await self.http_client.post("/vacancy/simulate-costs/", json=payload_input)
+        assert response.status_code == 200
+
+        json_response: dict = response.json()
+
+        assert "status_code" in json_response
+        assert "payload" in json_response

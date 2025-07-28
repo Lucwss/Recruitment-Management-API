@@ -3,6 +3,7 @@ import random
 
 faker = Faker()
 sectors = ["RH", "IT", "Commercial", "Logistics", "Finance", "Marketing", "Operations", "Legal"]
+periods = ["ANNUAL", "MONTHLY"]
 
 def generate_fake_vacancy_data():
     payload = {
@@ -16,6 +17,14 @@ def generate_fake_vacancy_data():
         "end_date": None,
         "notes": faker.text(255)
 
+    }
+
+    return payload
+
+def generate_fake_data_simulation_input():
+    payload = {
+        "sector": random.choice(sectors),
+        "period": random.choice(periods)
     }
 
     return payload

@@ -33,7 +33,7 @@ class TestDeleteVacancy:
 
     async def test_delete_vacancy(self):
 
-        response = await self.http_client.delete(f"/vacancy/{self.vacancy_id}")
+        response = await self.http_client.delete(f"/vacancy/{self.vacancy_id}/")
         assert response.status_code == 200
 
         json_response: dict = response.json()

@@ -33,7 +33,7 @@ class TestGetVacancy:
 
     async def test_get_vacancy(self):
 
-        response = await self.http_client.get(f"/vacancy/{self.vacancy_id}")
+        response = await self.http_client.get(f"/vacancy/{self.vacancy_id}/")
         assert response.status_code == 200
 
         json_response: dict = response.json()
