@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
+from application.dto.pagination import Pagination, PaginationResponse
 from application.dto.vacancy import VacancyInput, VacancyOutput
 
 
@@ -29,7 +31,7 @@ class IVacancyRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def list_vacancies(self, filters: dict = None) -> list:
+    async def list_vacancies(self, pagination: Pagination) -> PaginationResponse:
         """ List all vacancies with optional filters. """
         raise NotImplementedError()
 

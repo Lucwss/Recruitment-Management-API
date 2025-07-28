@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.responses import JSONResponse
-from typing import Annotated
+from typing import Annotated, Any
 
 from application.dto.vacancy import VacancyInput
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
+from domain.usecases.list_vacancy import ListVacancyUseCase
 from domain.usecases.update_vacancy import UpdateVacancyUseCase
 from web.dependencies import create_vacancy_use_case, get_vacancy_use_case, delete_vacancy_use_case, \
-    update_vacancy_use_case
+    update_vacancy_use_case, list_vacancy_use_case
 
 vacancy_router = APIRouter(
     prefix="/vacancy",
@@ -46,4 +47,14 @@ async def update_vacancy(
         use_case: Annotated[UpdateVacancyUseCase, Depends(update_vacancy_use_case)]
 ):
     response = await use_case.execute(vacancy_id=vacancy_id, vacancy_data_input=vacancy_input)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)
+
+@vacancy_router.get("/", summary='Route for getting all vacancies.')
+async def list_vacancies(
+        use_case: Annotated[ListVacancyUseCase, Depends(list_vacancy_use_case)],
+        search: Any = Query(None),
+        page: int = Query(default=1),
+        page_size: int = Query(default=10),
+):
+    response = await use_case.execute(page=page, page_size=page_size, search=search)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)

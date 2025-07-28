@@ -1,7 +1,10 @@
+from typing import Any
 from uuid import UUID
 
 from tortoise.contrib.pydantic import pydantic_model_creator
+from tortoise.expressions import Q
 
+from application.dto.pagination import Pagination, PaginationResponse
 from application.dto.vacancy import VacancyInput, VacancyOutput
 from domain.interfaces.vacancy_repository import IVacancyRepository
 from infra.database.pgdatabase import Vacancy
@@ -75,5 +78,27 @@ class VacancyRepository(IVacancyRepository):
             print(e)
             return False
 
-    async def list_vacancies(self, filters: dict = None) -> list:
-        pass
+    async def list_vacancies(self, pagination: Pagination) -> PaginationResponse:
+        query = Q()
+
+        if pagination.search:
+            query |= Q(description__icontains=pagination.search)
+            query |= Q(sector__icontains=pagination.search)
+            query |= Q(manager__icontains=pagination.search)
+            query |= Q(notes__icontains=pagination.search)
+
+        total = await Vacancy.filter(query).count()
+
+        offset = (pagination.page - 1) * pagination.page_size
+
+        vacancies = await Vacancy.filter(query).offset(offset).limit(pagination.page_size)
+
+        list_response = [
+            VacancyOutput(**(await VacancyPydantic.from_tortoise_orm(v)).model_dump())
+            for v in vacancies
+        ]
+
+        return PaginationResponse(
+            data=list_response,
+            total=total
+        )
