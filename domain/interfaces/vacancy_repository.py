@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from application.dto.pagination import Pagination, PaginationResponse
+from application.dto.simulation import CostSimulationInput, CostSimulationOutput
 from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate
 
 
@@ -38,5 +39,10 @@ class IVacancyRepository(ABC):
     @abstractmethod
     async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate) -> VacancyOutput | None:
         """ Edit an existing vacancy status. """
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def simulate_vacancy_costs(self, costs_simulation_input: CostSimulationInput) -> CostSimulationOutput:
+        """ Simulate costs for all vacancies. """
         raise NotImplementedError()
 

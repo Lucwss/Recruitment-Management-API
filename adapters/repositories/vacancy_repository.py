@@ -3,11 +3,12 @@ from uuid import UUID
 
 from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.expressions import Q
-
+from datetime import datetime, timezone
 from application.dto.pagination import Pagination, PaginationResponse
+from application.dto.simulation import CostSimulationInput, CostSimulationOutput
 from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate
 from domain.interfaces.vacancy_repository import IVacancyRepository
-from infra.database.pgdatabase import Vacancy
+from infra.database.pgdatabase import Vacancy, Status
 from tortoise.transactions import in_transaction
 
 
@@ -49,6 +50,7 @@ class VacancyRepository(IVacancyRepository):
                     found_vacancy.start_date = vacancy_data.start_date
                     found_vacancy.end_date = vacancy_data.end_date
                     found_vacancy.notes = vacancy_data.notes
+                    found_vacancy.updated_at = datetime.now(timezone.utc)
 
                     await found_vacancy.save()
 
@@ -112,6 +114,8 @@ class VacancyRepository(IVacancyRepository):
         try:
             async with in_transaction():
                 found_vacancy.status = vacancy_status.value
+                found_vacancy.end_date = datetime.now(timezone.utc)
+                found_vacancy.updated_at = datetime.now(timezone.utc)
                 await found_vacancy.save()
 
                 updated_vacancy = await VacancyPydantic.from_tortoise_orm(found_vacancy)
@@ -120,3 +124,38 @@ class VacancyRepository(IVacancyRepository):
         except Exception as e:
             print(e)
             return None
+
+    async def simulate_vacancy_costs(self, costs_simulation_input: CostSimulationInput) -> CostSimulationOutput:
+        query = Vacancy.filter(status=Status.in_progress)
+
+        if costs_simulation_input.sector:
+            query = query.filter(sector__iexact=costs_simulation_input.sector)
+
+        vacancies = await query.all()
+
+        if not vacancies:
+            return CostSimulationOutput(
+                period=costs_simulation_input.period,
+                sector=costs_simulation_input.sector,
+                estimated_cost=0.0,
+                message="Não existem vagas em andamento para o filtro selecionado."
+            )
+
+        total = sum(v.salary_expectation for v in vacancies)
+
+        if costs_simulation_input.period == "ANNUAL":
+            total *= 12
+
+        return CostSimulationOutput(
+            period=costs_simulation_input.period,
+            sector=costs_simulation_input.sector,
+            estimated_cost=total,
+            message=f"Custo total estimado ({costs_simulation_input.period.title()})"
+                    + (f" para o setor '{costs_simulation_input.sector}'" if costs_simulation_input.sector else "") +
+                    f": R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        )
+
+
+
+
+
