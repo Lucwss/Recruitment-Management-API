@@ -3,7 +3,6 @@ import traceback
 from typing import Any
 
 from application.dto.pagination import Pagination, PaginationResponse
-from application.dto.vacancy import VacancyInput, VacancyOutput
 from web.http_response_schema import HttpResponse
 
 from application.interfaces.usecase import UseCase
