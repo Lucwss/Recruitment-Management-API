@@ -5,7 +5,7 @@ from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.expressions import Q
 
 from application.dto.pagination import Pagination, PaginationResponse
-from application.dto.vacancy import VacancyInput, VacancyOutput
+from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate
 from domain.interfaces.vacancy_repository import IVacancyRepository
 from infra.database.pgdatabase import Vacancy
 from tortoise.transactions import in_transaction
@@ -102,3 +102,21 @@ class VacancyRepository(IVacancyRepository):
             data=list_response,
             total=total
         )
+
+    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate) -> VacancyOutput | None:
+        found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
+
+        if not found_vacancy:
+            return None
+
+        try:
+            async with in_transaction():
+                found_vacancy.status = vacancy_status.value
+                await found_vacancy.save()
+
+                updated_vacancy = await VacancyPydantic.from_tortoise_orm(found_vacancy)
+                return VacancyOutput(**updated_vacancy.model_dump())
+
+        except Exception as e:
+            print(e)
+            return None

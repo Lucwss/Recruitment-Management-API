@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from application.dto.pagination import Pagination, PaginationResponse
-from application.dto.vacancy import VacancyInput, VacancyOutput
+from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate
 
 
 class IVacancyRepository(ABC):
@@ -33,5 +33,10 @@ class IVacancyRepository(ABC):
     @abstractmethod
     async def list_vacancies(self, pagination: Pagination) -> PaginationResponse:
         """ List all vacancies with optional filters. """
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate) -> VacancyOutput | None:
+        """ Edit an existing vacancy status. """
         raise NotImplementedError()
 
