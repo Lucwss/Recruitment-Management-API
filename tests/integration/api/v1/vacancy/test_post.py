@@ -23,14 +23,10 @@ class TestPostVacancy:
 
         payload = json_response["payload"]
 
-        assert "id" in payload
-        assert "description" in payload
-        assert "sector" in payload
-        assert "manager" in payload
-        assert "salary_expectation" in payload
-        assert "urgency" in payload
-        assert "status" in payload
-        assert "start_date" in payload
-        assert "end_date" in payload
-        assert "notes" in payload
+        required_fields = [
+            "id", "description", "sector", "manager", "salary_expectation",
+            "urgency", "status", "start_date", "end_date", "notes"
+        ]
+        for field in required_fields:
+            assert field in payload
 
