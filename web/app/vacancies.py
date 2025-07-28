@@ -4,15 +4,17 @@ from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.responses import JSONResponse
 from typing import Annotated, Any
 
+from application.dto.simulation import Period, CostSimulationInput
 from application.dto.vacancy import VacancyInput, StatusToUpdate
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
 from domain.usecases.edit_vacancy_status import EditVacancyStatusUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
 from domain.usecases.list_vacancy import ListVacancyUseCase
+from domain.usecases.simulate_vacancy_costs import SimulateVacancyCostsUseCase
 from domain.usecases.update_vacancy import UpdateVacancyUseCase
 from web.dependencies import create_vacancy_use_case, get_vacancy_use_case, delete_vacancy_use_case, \
-    update_vacancy_use_case, list_vacancy_use_case, edit_vacancy_status_use_case
+    update_vacancy_use_case, list_vacancy_use_case, edit_vacancy_status_use_case, simulate_vacancy_costs_use_case
 
 vacancy_router = APIRouter(
     prefix="/vacancy",
@@ -27,7 +29,7 @@ async def create_vacancy(
     response = await use_case.execute(vacancy_data_input=vacancy_input)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
-@vacancy_router.get("/{vacancy_id}", summary='Route for getting a vacancy by ID.')
+@vacancy_router.get("/{vacancy_id}/", summary='Route for getting a vacancy by ID.')
 async def get_vacancy(
         vacancy_id: Annotated[str, Path(...)],
         use_case: Annotated[GetVacancyUseCase, Depends(get_vacancy_use_case)]
@@ -35,7 +37,7 @@ async def get_vacancy(
     response = await use_case.execute(vacancy_id=vacancy_id)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
-@vacancy_router.delete("/{vacancy_id}", summary='Route for deleting a vacancy by ID.')
+@vacancy_router.delete("/{vacancy_id}/", summary='Route for deleting a vacancy by ID.')
 async def delete_vacancy(
         vacancy_id: Annotated[str, Path(...)],
         use_case: Annotated[DeleteVacancyUseCase, Depends(delete_vacancy_use_case)]
@@ -43,7 +45,7 @@ async def delete_vacancy(
     response = await use_case.execute(vacancy_id=vacancy_id)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
-@vacancy_router.put("/{vacancy_id}", summary='Route for updating a vacancy by ID.')
+@vacancy_router.put("/{vacancy_id}/", summary='Route for updating a vacancy by ID.')
 async def update_vacancy(
         vacancy_id: Annotated[str, Path(...)],
         vacancy_input: Annotated[VacancyInput, Body(...)],
@@ -70,4 +72,12 @@ async def get_vacancy(
         use_case: Annotated[EditVacancyStatusUseCase, Depends(edit_vacancy_status_use_case)]
 ):
     response = await use_case.execute(vacancy_id=vacancy_id, vacancy_status=vacancy_status)
+    return JSONResponse(content=response.model_dump(), status_code=response.status_code)
+
+@vacancy_router.post("/simulate-costs/", summary='Route for creation of a vacancy.')
+async def simulate_in_progress_vacancy(
+        cost_simulation_input: Annotated[CostSimulationInput, Body(...)],
+        use_case: Annotated[SimulateVacancyCostsUseCase, Depends(simulate_vacancy_costs_use_case)]
+):
+    response = await use_case.execute(costs_simulation_input=cost_simulation_input)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)

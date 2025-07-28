@@ -8,6 +8,7 @@ from domain.usecases.delete_vacancy import DeleteVacancyUseCase
 from domain.usecases.edit_vacancy_status import EditVacancyStatusUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
 from domain.usecases.list_vacancy import ListVacancyUseCase
+from domain.usecases.simulate_vacancy_costs import SimulateVacancyCostsUseCase
 from domain.usecases.update_vacancy import UpdateVacancyUseCase
 from infra.database.pgdatabase import Vacancy
 
@@ -72,3 +73,12 @@ def edit_vacancy_status_use_case(
     """
 
     return EditVacancyStatusUseCase(repository)
+
+def simulate_vacancy_costs_use_case(
+        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+) -> SimulateVacancyCostsUseCase:
+    """
+    function that injects the dependencies for SimulateVacancyCostsUseCase
+    """
+
+    return SimulateVacancyCostsUseCase(repository)
