@@ -6,6 +6,7 @@ from adapters.repositories.vacancy_repository import VacancyRepository
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
+from domain.usecases.update_vacancy import UpdateVacancyUseCase
 from infra.database.pgdatabase import Vacancy
 
 
@@ -42,3 +43,12 @@ def delete_vacancy_use_case(
     """
 
     return DeleteVacancyUseCase(repository)
+
+def update_vacancy_use_case(
+        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+) -> UpdateVacancyUseCase:
+    """
+    function that injects the dependencies for UpdateVacancyUseCase
+    """
+
+    return UpdateVacancyUseCase(repository)
