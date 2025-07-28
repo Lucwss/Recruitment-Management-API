@@ -25,3 +25,8 @@ build-backend = "poetry.core.masonry.api"
 tortoise_orm = "infra.database.pgdatabase.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
+
+[tool.poetry.group.dev.dependencies]
+pytest-asyncio = "^1.1.0"
+httpx = "^0.28.1"
+
