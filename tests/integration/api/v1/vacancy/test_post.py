@@ -30,3 +30,16 @@ class TestPostVacancy:
         assert "status_code" in json_response
         assert "payload" in json_response
 
+        payload = json_response["payload"]
+
+        assert "id" in payload
+        assert "description" in payload
+        assert "sector" in payload
+        assert "manager" in payload
+        assert "salary_expectation" in payload
+        assert "urgency" in payload
+        assert "status" in payload
+        assert "start_date" in payload
+        assert "end_date" in payload
+        assert "notes" in payload
+
