@@ -1,11 +1,12 @@
+from typing import Optional
+
 from fastapi import FastAPI
 from tortoise.models import Model
-from tortoise import fields
+from tortoise import fields, Tortoise
 from uuid import UUID
 from datetime import datetime
 from enum import IntEnum, StrEnum
 import os
-from tortoise.contrib.fastapi import register_tortoise
 
 class Urgency(IntEnum):
     low = 0
@@ -22,12 +23,14 @@ class Vacancy(Model):
     description: str = fields.CharField(max_length=255)
     sector: str = fields.CharField(max_length=255)
     manager: str = fields.CharField(max_length=255)
-    salary_expectation: str = fields.CharField(max_length=255)
+    salary_expectation: float = fields.FloatField()
     urgency: Urgency = fields.IntEnumField(Urgency, "Urgency options")
     status: Status = fields.CharEnumField(Status, "Status options")
     start_date: datetime = fields.DatetimeField(auto_now=True)
-    end_date: datetime = fields.DatetimeField(auto_now=True, null=True)
-    notes: str = fields.CharField(max_length=255, null=True)
+    end_date: Optional[datetime] = fields.DatetimeField(auto_now=True, null=True)
+    notes: Optional[str] = fields.CharField(max_length=255, null=True)
+    created_at: datetime = fields.DatetimeField(auto_now=True)
+    updated_at: datetime = fields.DatetimeField(auto_now=True)
 
 
 TORTOISE_ORM = {
@@ -54,11 +57,10 @@ TORTOISE_ORM = {
     }
 }
 
-def init_db(app: FastAPI) -> None:
-    register_tortoise(
-        app,
-        db_url=os.environ.get("POSTGRES_URL"),
-        modules={"models": ["infra.database.pgdatabase"]},
-        generate_schemas=True,
-        add_exception_handlers=True,
-)
+async def init_db() -> None:
+     await Tortoise.init(
+         config=TORTOISE_ORM
+     )
+
+async def close_db() -> None:
+    await Tortoise.close_connections()
