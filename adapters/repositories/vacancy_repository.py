@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 from application.dto.vacancy import VacancyInput, VacancyOutput
@@ -10,16 +12,22 @@ VacancyPydantic = pydantic_model_creator(Vacancy)
 
 class VacancyRepository(IVacancyRepository):
 
-    async def get_vacancy_by_id(self, vacancy_id: str) -> dict:
-        pass
+    async def get_vacancy_by_id(self, vacancy_id: str) -> VacancyOutput | None:
+        found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
+
+        if found_vacancy:
+            found_vacancy_in_database = await VacancyPydantic.from_tortoise_orm(found_vacancy)
+            return VacancyOutput(**found_vacancy_in_database.model_dump())
+
+        return None
 
     async def create_vacancy(self, vacancy_data: VacancyInput) -> VacancyOutput:
         vacancy_data_as_dict = vacancy_data.model_dump()
 
         async with in_transaction():
-            created_vacation = await Vacancy.create(**vacancy_data_as_dict)
-            created_vacation = await VacancyPydantic.from_tortoise_orm(created_vacation)
-            return VacancyOutput(**created_vacation.model_dump())
+            created_vacancy = await Vacancy.create(**vacancy_data_as_dict)
+            created_vacancy = await VacancyPydantic.from_tortoise_orm(created_vacancy)
+            return VacancyOutput(**created_vacancy.model_dump())
 
 
 

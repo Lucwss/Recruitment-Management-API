@@ -9,7 +9,7 @@ class IVacancyRepository(ABC):
     """
 
     @abstractmethod
-    async def get_vacancy_by_id(self, vacancy_id: str) -> dict:
+    async def get_vacancy_by_id(self, vacancy_id: str) -> VacancyOutput | None:
         """ Get a vacancy by its ID. """
         raise NotImplementedError()
 
