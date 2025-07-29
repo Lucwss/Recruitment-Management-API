@@ -6,6 +6,9 @@ from datetime import datetime
 from infra.database.pgdatabase import Urgency, Status
 from uuid import UUID
 
+class NotesInput(BaseModel):
+    notes: Optional[str | None] = Field(None, description="Additional notes for the vacancy")
+
 class StatusToUpdate(StrEnum):
     finished = "FINISHED"
     canceled = "CANCELED"

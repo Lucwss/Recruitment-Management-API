@@ -1,7 +1,7 @@
 import json
 import traceback
 
-from application.dto.vacancy import VacancyOutput, StatusToUpdate
+from application.dto.vacancy import VacancyOutput, StatusToUpdate, NotesInput
 from web.http_response_schema import HttpResponse
 
 from application.interfaces.usecase import UseCase
@@ -25,7 +25,7 @@ class EditVacancyStatusUseCase(UseCase):
         self.repository = repository
 
 
-    async def execute(self, vacancy_id: str, vacancy_status: StatusToUpdate) -> HttpResponse:
+    async def execute(self, vacancy_id: str, vacancy_status: StatusToUpdate, optional_notes: NotesInput = None) -> HttpResponse:
 
         try:
             found_vacancy: VacancyOutput | None = await self.repository.get_vacancy_by_id(vacancy_id)
@@ -33,7 +33,7 @@ class EditVacancyStatusUseCase(UseCase):
             if not found_vacancy:
                 return HttpResponseSchema.not_found(Exception(f"Vacancy not found for id: {vacancy_id}."))
 
-            updated_vacancy: VacancyOutput | None = await self.repository.edit_vacancy_status(vacancy_id, vacancy_status)
+            updated_vacancy: VacancyOutput | None = await self.repository.edit_vacancy_status(vacancy_id, vacancy_status, optional_notes)
 
             if not updated_vacancy:
                 return HttpResponseSchema.bad_request(Exception(f"Error while trying to update a vacancy for id: {vacancy_id}."))

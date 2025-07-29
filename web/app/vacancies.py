@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from typing import Annotated, Any
 
 from application.dto.simulation import Period, CostSimulationInput
-from application.dto.vacancy import VacancyInput, StatusToUpdate
+from application.dto.vacancy import VacancyInput, StatusToUpdate, NotesInput
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
 from domain.usecases.edit_vacancy_status import EditVacancyStatusUseCase
@@ -69,9 +69,10 @@ async def list_vacancies(
 async def get_vacancy(
         vacancy_id: Annotated[str, Path(...)],
         vacancy_status: Annotated[StatusToUpdate, Query(...)],
-        use_case: Annotated[EditVacancyStatusUseCase, Depends(edit_vacancy_status_use_case)]
+        use_case: Annotated[EditVacancyStatusUseCase, Depends(edit_vacancy_status_use_case)],
+        notes: NotesInput = Body(default=None),
 ):
-    response = await use_case.execute(vacancy_id=vacancy_id, vacancy_status=vacancy_status)
+    response = await use_case.execute(vacancy_id=vacancy_id, vacancy_status=vacancy_status, optional_notes=notes)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
 
 @vacancy_router.post("/simulate-costs/", summary='Route for creation of a vacancy.')

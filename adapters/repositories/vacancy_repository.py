@@ -6,7 +6,7 @@ from tortoise.expressions import Q
 from datetime import datetime, timezone
 from application.dto.pagination import Pagination, PaginationResponse
 from application.dto.simulation import CostSimulationInput, CostSimulationOutput
-from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate
+from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate, NotesInput
 from domain.interfaces.vacancy_repository import IVacancyRepository
 from infra.database.pgdatabase import Vacancy, Status
 from tortoise.transactions import in_transaction
@@ -27,6 +27,15 @@ class VacancyRepository(IVacancyRepository):
 
     async def create_vacancy(self, vacancy_data: VacancyInput) -> VacancyOutput:
         vacancy_data_as_dict = vacancy_data.model_dump()
+
+        start_date = vacancy_data_as_dict['start_date']
+        end_date = vacancy_data_as_dict['end_date']
+
+        if not start_date:
+            vacancy_data_as_dict['start_date'] = datetime.now(timezone.utc)
+
+        if not end_date:
+            vacancy_data_as_dict['end_date'] = datetime.now(timezone.utc)
 
         async with in_transaction():
             created_vacancy = await Vacancy.create(**vacancy_data_as_dict)
@@ -89,11 +98,11 @@ class VacancyRepository(IVacancyRepository):
             query |= Q(manager__icontains=pagination.search)
             query |= Q(notes__icontains=pagination.search)
 
-        total = await Vacancy.filter(query).count()
-
         offset = (pagination.page - 1) * pagination.page_size
 
         vacancies = await Vacancy.filter(query).offset(offset).limit(pagination.page_size)
+
+        total = await Vacancy.filter(query).count()
 
         list_response = [
             VacancyOutput(**(await VacancyPydantic.from_tortoise_orm(v)).model_dump())
@@ -105,7 +114,7 @@ class VacancyRepository(IVacancyRepository):
             total=total
         )
 
-    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate) -> VacancyOutput | None:
+    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate, optional_notes: NotesInput = None) -> VacancyOutput | None:
         found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
 
         if not found_vacancy:
@@ -116,6 +125,10 @@ class VacancyRepository(IVacancyRepository):
                 found_vacancy.status = vacancy_status.value
                 found_vacancy.end_date = datetime.now(timezone.utc)
                 found_vacancy.updated_at = datetime.now(timezone.utc)
+
+                if optional_notes:
+                    found_vacancy.notes = optional_notes.notes
+
                 await found_vacancy.save()
 
                 updated_vacancy = await VacancyPydantic.from_tortoise_orm(found_vacancy)

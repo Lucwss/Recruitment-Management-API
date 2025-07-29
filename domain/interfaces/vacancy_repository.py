@@ -3,7 +3,7 @@ from typing import Any
 
 from application.dto.pagination import Pagination, PaginationResponse
 from application.dto.simulation import CostSimulationInput, CostSimulationOutput
-from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate
+from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate, NotesInput
 
 
 class IVacancyRepository(ABC):
@@ -37,7 +37,7 @@ class IVacancyRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate) -> VacancyOutput | None:
+    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate, optional_notes: NotesInput = None) -> VacancyOutput | None:
         """ Edit an existing vacancy status. """
         raise NotImplementedError()
 
