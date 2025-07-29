@@ -1,0 +1,73 @@
+name: Automated Tests
+on: pull_request
+
+jobs:
+  pytest:
+    name: Pytest on Ubuntu
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: localuser
+          POSTGRES_PASSWORD: localpassword
+          POSTGRES_DB: recruitment-database
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U localuser"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pip install poetry==2.0.0
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run migrations
+        run: poetry run aerich upgrade
+        env:
+          POSTGRES_PASSWORD: localpassword
+          POSTGRES_USER: localuser
+          POSTGRES_DB: recruitment-database
+          POSTGRES_HOST: recruitment-management-database
+          POSTGRES_PORT: 5432
+          DATABASE_URL: postgresql://localuser:localpassword@localhost:5432/recruitment-database
+
+      - name: Start API in background
+        run: |
+          nohup poetry run uvicorn entrypoint:app --host 0.0.0.0 --port 8000 &
+        env:
+          POSTGRES_PASSWORD: localpassword
+          POSTGRES_USER: localuser
+          POSTGRES_DB: recruitment-database
+          POSTGRES_HOST: recruitment-management-database
+          POSTGRES_PORT: 5432
+          DATABASE_URL: postgresql://localuser:localpassword@localhost:5432/recruitment-database
+
+      - name: Wait for services
+        run: poetry run python infra/scripts/wait_for_services.py
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          API_HOST: localhost
+          API_PORT: 8000
+
+      - name: Run tests
+        run: poetry run pytest -vv
+        env:
+          POSTGRES_PASSWORD: localpassword
+          POSTGRES_USER: localuser
+          POSTGRES_DB: recruitment-database
+          POSTGRES_HOST: recruitment-management-database
+          POSTGRES_PORT: 5432
+          DATABASE_URL: postgresql://localuser:localpassword@localhost:5432/recruitment-database
