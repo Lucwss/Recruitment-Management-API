@@ -31,7 +31,7 @@ jobs:
         run: pip install poetry==2.0.0
 
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --no-root
 
       - name: Run migrations
         run: poetry run aerich upgrade
@@ -39,7 +39,7 @@ jobs:
           POSTGRES_PASSWORD: localpassword
           POSTGRES_USER: localuser
           POSTGRES_DB: recruitment-database
-          POSTGRES_HOST: recruitment-management-database
+          POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
           DATABASE_URL: postgresql://localuser:localpassword@localhost:5432/recruitment-database
 
@@ -50,7 +50,7 @@ jobs:
           POSTGRES_PASSWORD: localpassword
           POSTGRES_USER: localuser
           POSTGRES_DB: recruitment-database
-          POSTGRES_HOST: recruitment-management-database
+          POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
           DATABASE_URL: postgresql://localuser:localpassword@localhost:5432/recruitment-database
 
