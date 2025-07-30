@@ -32,4 +32,7 @@ src_folder = "./."
 pytest-asyncio = "^1.1.0"
 httpx = "^0.28.1"
 faker = "^37.4.2"
+pylint = "^3.3.7"
+black = "^25.1.0"
+isort = "^6.0.1"
 
