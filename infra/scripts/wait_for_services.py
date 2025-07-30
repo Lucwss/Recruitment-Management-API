@@ -3,10 +3,10 @@ import time
 import socket
 import requests
 
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "0.0.0.0")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
 POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", 5432))
 
-API_HOST = os.getenv("API_HOST", "0.0.0.0")
+API_HOST = os.getenv("API_HOST", "localhost")
 API_PORT = int(os.getenv("API_PORT", 8000))
 API_HEALTHCHECK = f"http://{API_HOST}:{API_PORT}/docs"
 
