@@ -13,3 +13,12 @@ test: services-up
 	@poetry run python infra/scripts/wait_for_services.py
 	poetry run pytest -vv
 	$(MAKE) services-down
+
+lint:
+	pylint --rcfile=.pylintrc adapters application domain infra tests web
+
+format:
+	@echo "🔧 Running isort (imports)..."
+	poetry run isort .
+	@echo "🎨 Running black (code formatting)..."
+	poetry run black .
