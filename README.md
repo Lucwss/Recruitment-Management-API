@@ -184,8 +184,6 @@ http://localhost:8000/docs
 
 ## API Documentation Preview
 
-You can add a screenshot of your Swagger UI here to help visualize the API:
-
 ![Swagger UI preview](docs/swagger.png)
 
 ---
