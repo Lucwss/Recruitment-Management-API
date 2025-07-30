@@ -15,7 +15,8 @@ test: services-up
 	$(MAKE) services-down
 
 lint:
-	pylint --rcfile=.pylintrc adapters application domain infra tests web
+	poetry run pylint --rcfile=.pylintrc adapters application domain infra tests web
+
 
 format:
 	@echo "🔧 Running isort (imports)..."
