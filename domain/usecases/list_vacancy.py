@@ -3,15 +3,12 @@ import traceback
 from typing import Any
 
 from application.dto.pagination import Pagination, PaginationResponse
-from web.http_response_schema import HttpResponse
-
 from application.interfaces.usecase import UseCase
 from domain.interfaces.vacancy_repository import IVacancyRepository
-from web.http_response_schema import HttpResponseSchema
+from web.http_response_schema import HttpResponse, HttpResponseSchema
 
 
 class ListVacancyUseCase(UseCase):
-
     """
     Use case to list all vacancies in the system (Implementing the UseCase interface).
     """
@@ -25,12 +22,15 @@ class ListVacancyUseCase(UseCase):
 
         self.repository = repository
 
-
     async def execute(self, page: int, page_size: int, search: Any) -> HttpResponse:
 
         try:
-            pagination: Pagination = Pagination(page=page, page_size=page_size, search=search)
-            list_of_vacancies: PaginationResponse = await self.repository.list_vacancies(pagination)
+            pagination: Pagination = Pagination(
+                page=page, page_size=page_size, search=search
+            )
+            list_of_vacancies: PaginationResponse = (
+                await self.repository.list_vacancies(pagination)
+            )
             list_of_vacancies_as_dict = json.loads(list_of_vacancies.model_dump_json())
             return HttpResponseSchema.ok(list_of_vacancies_as_dict)
 

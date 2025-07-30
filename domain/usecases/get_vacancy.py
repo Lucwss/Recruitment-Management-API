@@ -1,16 +1,13 @@
 import json
 import traceback
 
-from application.dto.vacancy import VacancyInput, VacancyOutput
-from web.http_response_schema import HttpResponse
-
+from application.dto.vacancy import VacancyOutput
 from application.interfaces.usecase import UseCase
 from domain.interfaces.vacancy_repository import IVacancyRepository
-from web.http_response_schema import HttpResponseSchema
+from web.http_response_schema import HttpResponse, HttpResponseSchema
 
 
 class GetVacancyUseCase(UseCase):
-
     """
     Use case for finding a vacancy by its id in the system (Implementing the UseCase interface).
     """
@@ -24,14 +21,17 @@ class GetVacancyUseCase(UseCase):
 
         self.repository = repository
 
-
     async def execute(self, vacancy_id: str) -> HttpResponse:
 
         try:
-            found_vacancy: VacancyOutput | None = await self.repository.get_vacancy_by_id(vacancy_id)
+            found_vacancy: VacancyOutput | None = (
+                await self.repository.get_vacancy_by_id(vacancy_id)
+            )
 
             if not found_vacancy:
-                return HttpResponseSchema.not_found(Exception(f"Vacancy not found for id: {vacancy_id}."))
+                return HttpResponseSchema.not_found(
+                    Exception(f"Vacancy not found for id: {vacancy_id}.")
+                )
 
             found_vacancy_dict = json.loads(found_vacancy.model_dump_json())
             return HttpResponseSchema.ok(found_vacancy_dict)

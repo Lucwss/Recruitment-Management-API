@@ -10,7 +10,6 @@ from domain.usecases.get_vacancy import GetVacancyUseCase
 from domain.usecases.list_vacancy import ListVacancyUseCase
 from domain.usecases.simulate_vacancy_costs import SimulateVacancyCostsUseCase
 from domain.usecases.update_vacancy import UpdateVacancyUseCase
-from infra.database.pgdatabase import Vacancy
 
 
 def vacancy_repository():
@@ -20,8 +19,9 @@ def vacancy_repository():
 
     return VacancyRepository()
 
+
 def create_vacancy_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> CreateVacancyUseCase:
     """
     function that injects the dependencies for CreateVacancyUseCase
@@ -29,8 +29,9 @@ def create_vacancy_use_case(
 
     return CreateVacancyUseCase(repository)
 
+
 def get_vacancy_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> GetVacancyUseCase:
     """
     function that injects the dependencies for GetVacancyUseCase
@@ -38,8 +39,9 @@ def get_vacancy_use_case(
 
     return GetVacancyUseCase(repository)
 
+
 def delete_vacancy_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> DeleteVacancyUseCase:
     """
     function that injects the dependencies for DeleteVacancyUseCase
@@ -47,8 +49,9 @@ def delete_vacancy_use_case(
 
     return DeleteVacancyUseCase(repository)
 
+
 def update_vacancy_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> UpdateVacancyUseCase:
     """
     function that injects the dependencies for UpdateVacancyUseCase
@@ -56,8 +59,9 @@ def update_vacancy_use_case(
 
     return UpdateVacancyUseCase(repository)
 
+
 def list_vacancy_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> ListVacancyUseCase:
     """
     function that injects the dependencies for ListVacancyUseCase
@@ -65,8 +69,9 @@ def list_vacancy_use_case(
 
     return ListVacancyUseCase(repository)
 
+
 def edit_vacancy_status_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> EditVacancyStatusUseCase:
     """
     function that injects the dependencies for EditVacancyStatusUseCase
@@ -74,8 +79,9 @@ def edit_vacancy_status_use_case(
 
     return EditVacancyStatusUseCase(repository)
 
+
 def simulate_vacancy_costs_use_case(
-        repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
 ) -> SimulateVacancyCostsUseCase:
     """
     function that injects the dependencies for SimulateVacancyCostsUseCase
