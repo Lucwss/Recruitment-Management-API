@@ -4,9 +4,11 @@ from pydantic import BaseModel
 
 
 class HttpResponse(BaseModel):
-    """ Standard HTTP response for all requests. """
+    """Standard HTTP response for all requests."""
+
     status_code: int
     payload: Any
+
 
 class HttpResponseSchema:
     """

@@ -2,15 +2,12 @@ import json
 import traceback
 
 from application.dto.vacancy import VacancyInput, VacancyOutput
-from web.http_response_schema import HttpResponse
-
 from application.interfaces.usecase import UseCase
 from domain.interfaces.vacancy_repository import IVacancyRepository
-from web.http_response_schema import HttpResponseSchema
+from web.http_response_schema import HttpResponse, HttpResponseSchema
 
 
 class UpdateVacancyUseCase(UseCase):
-
     """
     Use case for updating a vacancy by its id in the system (Implementing the UseCase interface).
     """
@@ -24,20 +21,29 @@ class UpdateVacancyUseCase(UseCase):
 
         self.repository = repository
 
-
-    async def execute(self, vacancy_id: str, vacancy_data_input: VacancyInput) -> HttpResponse:
+    async def execute(
+        self, vacancy_id: str, vacancy_data_input: VacancyInput
+    ) -> HttpResponse:
 
         try:
 
-            found_vacancy: VacancyOutput | None = await self.repository.get_vacancy_by_id(vacancy_id)
+            found_vacancy: VacancyOutput | None = (
+                await self.repository.get_vacancy_by_id(vacancy_id)
+            )
 
             if not found_vacancy:
-                return HttpResponseSchema.not_found(Exception(f"Vacancy not found for id: {vacancy_id}."))
+                return HttpResponseSchema.not_found(
+                    Exception(f"Vacancy not found for id: {vacancy_id}.")
+                )
 
-            updated_vacancy: VacancyOutput | None = await self.repository.update_vacancy(vacancy_id, vacancy_data_input)
+            updated_vacancy: VacancyOutput | None = (
+                await self.repository.update_vacancy(vacancy_id, vacancy_data_input)
+            )
 
             if not updated_vacancy:
-                return HttpResponseSchema.bad_request(Exception(f"Vacancy not found for id: {vacancy_id}."))
+                return HttpResponseSchema.bad_request(
+                    Exception(f"Vacancy not found for id: {vacancy_id}.")
+                )
 
             updated_vacancy_dict = json.loads(updated_vacancy.model_dump_json())
             return HttpResponseSchema.ok(updated_vacancy_dict)

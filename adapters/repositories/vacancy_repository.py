@@ -1,26 +1,36 @@
-from typing import Any
+from datetime import datetime, timezone
 from uuid import UUID
 
 from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.expressions import Q
-from datetime import datetime, timezone
-from application.dto.pagination import Pagination, PaginationResponse
-from application.dto.simulation import CostSimulationInput, CostSimulationOutput
-from application.dto.vacancy import VacancyInput, VacancyOutput, StatusToUpdate, NotesInput
-from domain.interfaces.vacancy_repository import IVacancyRepository
-from infra.database.pgdatabase import Vacancy, Status
 from tortoise.transactions import in_transaction
 
+from application.dto.pagination import Pagination, PaginationResponse
+from application.dto.simulation import CostSimulationInput, CostSimulationOutput
+from application.dto.vacancy import (
+    NotesInput,
+    StatusToUpdate,
+    VacancyInput,
+    VacancyOutput,
+)
+from domain.interfaces.vacancy_repository import IVacancyRepository
+from infra.database.pgdatabase import Status, Vacancy
 
 VacancyPydantic = pydantic_model_creator(Vacancy)
 
+
 class VacancyRepository(IVacancyRepository):
+    """
+    Repository for managing vacancies in the database.
+    """
 
     async def get_vacancy_by_id(self, vacancy_id: str) -> VacancyOutput | None:
         found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
 
         if found_vacancy:
-            found_vacancy_in_database = await VacancyPydantic.from_tortoise_orm(found_vacancy)
+            found_vacancy_in_database = await VacancyPydantic.from_tortoise_orm(
+                found_vacancy
+            )
             return VacancyOutput(**found_vacancy_in_database.model_dump())
 
         return None
@@ -28,23 +38,23 @@ class VacancyRepository(IVacancyRepository):
     async def create_vacancy(self, vacancy_data: VacancyInput) -> VacancyOutput:
         vacancy_data_as_dict = vacancy_data.model_dump()
 
-        start_date = vacancy_data_as_dict['start_date']
-        end_date = vacancy_data_as_dict['end_date']
+        start_date = vacancy_data_as_dict["start_date"]
+        end_date = vacancy_data_as_dict["end_date"]
 
         if not start_date:
-            vacancy_data_as_dict['start_date'] = datetime.now(timezone.utc)
+            vacancy_data_as_dict["start_date"] = datetime.now(timezone.utc)
 
         if not end_date:
-            vacancy_data_as_dict['end_date'] = datetime.now(timezone.utc)
+            vacancy_data_as_dict["end_date"] = datetime.now(timezone.utc)
 
         async with in_transaction():
             created_vacancy = await Vacancy.create(**vacancy_data_as_dict)
             created_vacancy = await VacancyPydantic.from_tortoise_orm(created_vacancy)
             return VacancyOutput(**created_vacancy.model_dump())
 
-
-
-    async def update_vacancy(self, vacancy_id: str, vacancy_data: VacancyInput) -> VacancyOutput | None:
+    async def update_vacancy(
+        self, vacancy_id: str, vacancy_data: VacancyInput
+    ) -> VacancyOutput | None:
         found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
 
         if found_vacancy:
@@ -63,17 +73,16 @@ class VacancyRepository(IVacancyRepository):
 
                     await found_vacancy.save()
 
-                    updated_vacancy = await VacancyPydantic.from_tortoise_orm(found_vacancy)
+                    updated_vacancy = await VacancyPydantic.from_tortoise_orm(
+                        found_vacancy
+                    )
                     return VacancyOutput(**updated_vacancy.model_dump())
-
 
             except Exception as e:
                 print(e)
                 return None
 
         return None
-
-
 
     async def delete_vacancy(self, vacancy_id: str) -> bool:
         found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
@@ -100,7 +109,9 @@ class VacancyRepository(IVacancyRepository):
 
         offset = (pagination.page - 1) * pagination.page_size
 
-        vacancies = await Vacancy.filter(query).offset(offset).limit(pagination.page_size)
+        vacancies = (
+            await Vacancy.filter(query).offset(offset).limit(pagination.page_size)
+        )
 
         total = await Vacancy.filter(query).count()
 
@@ -109,12 +120,14 @@ class VacancyRepository(IVacancyRepository):
             for v in vacancies
         ]
 
-        return PaginationResponse(
-            data=list_response,
-            total=total
-        )
+        return PaginationResponse(data=list_response, total=total)
 
-    async def edit_vacancy_status(self, vacancy_id: str, vacancy_status: StatusToUpdate, optional_notes: NotesInput = None) -> VacancyOutput | None:
+    async def edit_vacancy_status(
+        self,
+        vacancy_id: str,
+        vacancy_status: StatusToUpdate,
+        optional_notes: NotesInput = None,
+    ) -> VacancyOutput | None:
         found_vacancy = await Vacancy.get_or_none(id=UUID(vacancy_id))
 
         if not found_vacancy:
@@ -138,7 +151,9 @@ class VacancyRepository(IVacancyRepository):
             print(e)
             return None
 
-    async def simulate_vacancy_costs(self, costs_simulation_input: CostSimulationInput) -> CostSimulationOutput:
+    async def simulate_vacancy_costs(
+        self, costs_simulation_input: CostSimulationInput
+    ) -> CostSimulationOutput:
         query = Vacancy.filter(status=Status.in_progress)
 
         if costs_simulation_input.sector:
@@ -151,7 +166,7 @@ class VacancyRepository(IVacancyRepository):
                 period=costs_simulation_input.period,
                 sector=costs_simulation_input.sector,
                 estimated_cost=0.0,
-                message="Não existem vagas em andamento para o filtro selecionado."
+                message="Não existem vagas em andamento para o filtro selecionado.",
             )
 
         total = sum(v.salary_expectation for v in vacancies)
@@ -164,11 +179,12 @@ class VacancyRepository(IVacancyRepository):
             sector=costs_simulation_input.sector,
             estimated_cost=total,
             message=f"Custo total estimado ({costs_simulation_input.period.title()})"
-                    + (f" para o setor '{costs_simulation_input.sector}'" if costs_simulation_input.sector else "") +
-                    f": R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            + (
+                f" para o setor '{costs_simulation_input.sector}'"
+                if costs_simulation_input.sector
+                else ""
+            )
+            + f": R$ {total:,.2f}".replace(",", "X")
+            .replace(".", ",")
+            .replace("X", "."),
         )
-
-
-
-
-

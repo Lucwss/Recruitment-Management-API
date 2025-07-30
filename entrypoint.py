@@ -1,14 +1,15 @@
+import os
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
-import uvicorn
 
-from infra.database.pgdatabase import init_db, close_db
+from infra.database.pgdatabase import close_db, init_db
 from web.app.vacancies import vacancy_router
 
-api_version = '/api/v1'
+api_version = "/api/v1"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,10 +17,9 @@ async def lifespan(app: FastAPI):
     yield
     await close_db()
 
+
 app = FastAPI(
-    title="Recruitment Management API",
-    redirect_slashes=False,
-    lifespan=lifespan
+    title="Recruitment Management API", redirect_slashes=False, lifespan=lifespan
 )
 
 
@@ -43,6 +43,5 @@ if __name__ == "__main__":
         port=8000,
         lifespan="on",
         loop="uvloop",
-        reload=True if app_mode == "development" else False
+        reload=True if app_mode == "development" else False,
     )
-
