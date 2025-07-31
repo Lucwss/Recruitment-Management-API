@@ -1,4 +1,5 @@
 import random
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -56,3 +57,27 @@ class TestPatchVacancy:
         payload = json_response["payload"]
 
         assert payload["status"] == status_to_insert
+
+    async def test_patch_status_invalid_id_format(self):
+        response = await self.http_client.patch(
+            "/vacancy/invalid_id/status/", params={"vacancy_status": "CANCELED"}
+        )
+        assert response.status_code == 400
+
+    async def test_patch_status_not_found(self):
+        non_existent_id = str(uuid4())
+
+        response = await self.http_client.patch(
+            f"/vacancy/{non_existent_id}/status/", params={"vacancy_status": "FINISHED"}
+        )
+        assert response.status_code == 404
+
+    async def test_patch_status_invalid_value(self):
+        response = await self.http_client.patch(
+            f"/vacancy/{self.vacancy_id}/status/", params={"vacancy_status": "INVALID"}
+        )
+        assert response.status_code == 422
+
+    async def test_patch_status_missing_param(self):
+        response = await self.http_client.patch(f"/vacancy/{self.vacancy_id}/status/")
+        assert response.status_code == 422
