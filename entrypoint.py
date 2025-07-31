@@ -7,9 +7,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from starlette.responses import JSONResponse
-
-from application.errors.date import DateTimeWrongFormat
 from infra.database.pgdatabase import close_db, init_db
+from web.app.health import health_router
 from web.app.vacancies import vacancy_router
 
 api_version = "/api/v1"
@@ -56,6 +55,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 app.include_router(vacancy_router, prefix=api_version)
+app.include_router(health_router, prefix=api_version)
 
 
 if __name__ == "__main__":
