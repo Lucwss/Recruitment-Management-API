@@ -4,6 +4,7 @@ import traceback
 from application.dto.vacancy import VacancyOutput
 from application.interfaces.usecase import UseCase
 from domain.interfaces.vacancy_repository import IVacancyRepository
+from utils.database_utils import is_valid_uuid
 from web.http_response_schema import HttpResponse, HttpResponseSchema
 
 
@@ -24,6 +25,13 @@ class GetVacancyUseCase(UseCase):
     async def execute(self, vacancy_id: str) -> HttpResponse:
 
         try:
+            is_valid_uuid_structure: bool = is_valid_uuid(vacancy_id)
+
+            if not is_valid_uuid_structure:
+                return HttpResponseSchema.bad_request(
+                    Exception(f"Invalid UUID structure for id: {vacancy_id}.")
+                )
+
             found_vacancy: VacancyOutput | None = (
                 await self.repository.get_vacancy_by_id(vacancy_id)
             )
