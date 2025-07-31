@@ -1660,6 +1660,22 @@ files = [
 ]
 
 [[package]]
+name = "sqlparse"
+version = "0.5.3"
+description = "A non-validating SQL parser."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "sqlparse-0.5.3-py3-none-any.whl", hash = "sha256:cf2196ed3418f3ba5de6af7e82c694a9fbdbfecccdfc72e281548517081f16ca"},
+    {file = "sqlparse-0.5.3.tar.gz", hash = "sha256:09f67787f56a0b16ecdbde1bfc7f5d9c3371ca683cfeaa8e6ff60b4807ec9272"},
+]
+
+[package.extras]
+dev = ["build", "hatch"]
+doc = ["sphinx"]
+
+[[package]]
 name = "starlette"
 version = "0.47.2"
 description = "The little ASGI library that shines."
@@ -2171,4 +2187,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "19b0a4d41db4d699deaaa916443d4c777a16d919a949fdf89e5e7374f3d51b0c"
+content-hash = "9d3edd98bbfe7773bbb61535bb86f50d50cd2b5e3ee832e078818960c0d00859"

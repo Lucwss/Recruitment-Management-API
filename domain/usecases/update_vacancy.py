@@ -2,8 +2,12 @@ import json
 import traceback
 
 from application.dto.vacancy import VacancyInput, VacancyOutput
+from application.errors.database import SQLInjectionDetected
+from application.errors.date import DateTimeWrongFormat, DateTimeWrongType
 from application.interfaces.usecase import UseCase
 from domain.interfaces.vacancy_repository import IVacancyRepository
+from utils.database_utils import is_valid_uuid, validate_no_sql_commands
+from utils.date_utils import validate_dates
 from web.http_response_schema import HttpResponse, HttpResponseSchema
 
 
@@ -26,6 +30,15 @@ class UpdateVacancyUseCase(UseCase):
     ) -> HttpResponse:
 
         try:
+            is_valid_uuid_structure: bool = is_valid_uuid(vacancy_id)
+
+            validate_dates(vacancy_data_input.start_date, vacancy_data_input.end_date)
+            validate_no_sql_commands(vacancy_data_input)
+
+            if not is_valid_uuid_structure:
+                return HttpResponseSchema.bad_request(
+                    Exception(f"Invalid UUID structure for id: {vacancy_id}.")
+                )
 
             found_vacancy: VacancyOutput | None = (
                 await self.repository.get_vacancy_by_id(vacancy_id)
@@ -47,6 +60,10 @@ class UpdateVacancyUseCase(UseCase):
 
             updated_vacancy_dict = json.loads(updated_vacancy.model_dump_json())
             return HttpResponseSchema.ok(updated_vacancy_dict)
+
+        except (DateTimeWrongFormat, DateTimeWrongType, SQLInjectionDetected) as e:
+            return HttpResponseSchema.unprocessable_entity(e)
+
         except Exception as e:
             traceback.print_exc()
             return HttpResponseSchema.internal_server_error(Exception(e))
