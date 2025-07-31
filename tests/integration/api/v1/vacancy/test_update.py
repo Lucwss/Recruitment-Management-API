@@ -69,7 +69,7 @@ class TestUpdateVacancy:
 
     async def test_update_vacancy_wrong_id(self):
 
-        response = await self.http_client.get(f"/vacancy/serigubsodfgiubs/")
+        response = await self.http_client.get("/vacancy/serigubsodfgiubs/")
         assert response.status_code == 400
 
     async def test_update_vacancy_not_found(self):

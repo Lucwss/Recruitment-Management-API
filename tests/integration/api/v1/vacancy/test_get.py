@@ -1,9 +1,11 @@
+from uuid import uuid4
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
 from tests.integration.api.v1.vacancy.fake_data import generate_fake_vacancy_data
-from uuid import uuid4
+
 
 @pytest_asyncio.fixture(loop_scope="class", autouse=True)
 async def setup_vacancy(request):
@@ -76,7 +78,7 @@ class TestGetVacancy:
 
     async def test_get_vacancy_wrong_id(self):
 
-        response = await self.http_client.get(f"/vacancy/serigubsodfgiubs/")
+        response = await self.http_client.get("/vacancy/serigubsodfgiubs/")
         assert response.status_code == 400
 
     async def test_get_vacancy_not_found(self):

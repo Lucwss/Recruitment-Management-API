@@ -1,6 +1,8 @@
+import uuid
+
 import sqlparse
 from pydantic import BaseModel
-import uuid
+
 from application.errors.database import SQLInjectionDetected
 
 
@@ -24,6 +26,7 @@ def validate_no_sql_commands(input_data: BaseModel):
             raise SQLInjectionDetected(
                 f"Field '{field_name}' contains a forbidden SQL pattern."
             )
+
 
 def is_valid_uuid(id_str: str) -> bool:
     """

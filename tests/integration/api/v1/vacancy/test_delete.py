@@ -1,7 +1,9 @@
+from uuid import uuid4
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
-from uuid import uuid4
+
 from tests.integration.api.v1.vacancy.fake_data import generate_fake_vacancy_data
 
 
@@ -50,10 +52,9 @@ class TestDeleteVacancy:
         assert "message" in payload
         assert payload["message"] == "Vacancy deleted successfully."
 
-
     async def test_delete_vacancy_wrong_id(self):
 
-        response = await self.http_client.delete(f"/vacancy/serigubsodfgiubs/")
+        response = await self.http_client.delete("/vacancy/serigubsodfgiubs/")
         assert response.status_code == 400
 
     async def test_delete_vacancy_not_found(self):
