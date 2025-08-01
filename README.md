@@ -188,6 +188,11 @@ http://localhost:8000/docs
 
 ---
 
+## Custom route to check system health status
+
+![Swagger UI preview](docs/health.png)
+
+---
 ## CI/CD Pipelines and GitHub Workflows
 
 This project includes GitHub Actions workflows for automated testing on pull requests.
