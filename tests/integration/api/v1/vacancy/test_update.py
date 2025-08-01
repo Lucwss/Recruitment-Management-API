@@ -4,6 +4,7 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
+from infra.scripts.wait_for_services import clear_database
 from tests.integration.api.v1.vacancy.fake_data import generate_fake_vacancy_data
 
 
@@ -13,6 +14,8 @@ async def setup_vacancy(request):
     Runs once before all tests in the class.
     Creates a test vacancy and stores it in the class.
     """
+
+    await clear_database()
 
     http_client = AsyncClient(base_url="http://0.0.0.0:8000/api/v1")
     request.cls.http_client = http_client
@@ -27,6 +30,7 @@ async def setup_vacancy(request):
     yield
 
     await http_client.aclose()
+    await clear_database()
 
 
 @pytest.mark.asyncio(loop_scope="class")
