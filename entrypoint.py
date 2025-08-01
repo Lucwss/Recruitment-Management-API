@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from starlette.responses import JSONResponse
+
 from infra.database.pgdatabase import close_db, init_db
 from web.app.health import health_router
 from web.app.vacancies import vacancy_router

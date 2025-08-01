@@ -1,8 +1,11 @@
-from tortoise import Tortoise
 import os
+from datetime import datetime, timezone
+
+from tortoise import Tortoise
+
 from application.dto.health import HealthStatusOutput
 from domain.interfaces.health_repository import IHealthRepository
-from datetime import datetime, timezone
+
 
 class HealthRepository(IHealthRepository):
     """

@@ -21,12 +21,14 @@ def vacancy_repository():
 
     return VacancyRepository()
 
+
 def health_repository():
     """
     function that injects the dependencies for HealthRepository
     """
 
     return HealthRepository()
+
 
 def create_vacancy_use_case(
     repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
@@ -96,6 +98,7 @@ def simulate_vacancy_costs_use_case(
     """
 
     return SimulateVacancyCostsUseCase(repository)
+
 
 def get_health_status_use_case(
     repository: Annotated[HealthRepository, Depends(health_repository)],

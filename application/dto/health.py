@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime
+
 
 class DatabaseStatus(BaseModel):
     """
@@ -12,12 +12,14 @@ class DatabaseStatus(BaseModel):
     max_connections: int
     opened_connections: int
 
+
 class Dependency(BaseModel):
     """
     Represents a dependency in the health status of the application.
     """
 
     database: DatabaseStatus
+
 
 class HealthStatusOutput(BaseModel):
     """

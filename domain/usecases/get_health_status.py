@@ -23,12 +23,12 @@ class GetHealthStatusUseCase(UseCase):
 
     async def execute(self) -> HttpResponse:
         try:
-           result: HealthStatusOutput = await self.repository.check_database_health()
-           result_as_dict = result.model_dump()
+            result: HealthStatusOutput = await self.repository.check_database_health()
+            result_as_dict = result.model_dump()
 
-           pprint(result_as_dict)
+            pprint(result_as_dict)
 
-           return HttpResponseSchema.ok(result_as_dict)
+            return HttpResponseSchema.ok(result_as_dict)
         except Exception as e:
             traceback.print_exc()
             return HttpResponseSchema.internal_server_error(Exception(e))
