@@ -2,10 +2,12 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from adapters.repositories.health_repository import HealthRepository
 from adapters.repositories.vacancy_repository import VacancyRepository
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
 from domain.usecases.edit_vacancy_status import EditVacancyStatusUseCase
+from domain.usecases.get_health_status import GetHealthStatusUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
 from domain.usecases.list_vacancy import ListVacancyUseCase
 from domain.usecases.simulate_vacancy_costs import SimulateVacancyCostsUseCase
@@ -19,6 +21,12 @@ def vacancy_repository():
 
     return VacancyRepository()
 
+def health_repository():
+    """
+    function that injects the dependencies for HealthRepository
+    """
+
+    return HealthRepository()
 
 def create_vacancy_use_case(
     repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
@@ -88,3 +96,12 @@ def simulate_vacancy_costs_use_case(
     """
 
     return SimulateVacancyCostsUseCase(repository)
+
+def get_health_status_use_case(
+    repository: Annotated[HealthRepository, Depends(health_repository)],
+) -> GetHealthStatusUseCase:
+    """
+    function that injects the dependencies for GetHealthStatusUseCase
+    """
+
+    return GetHealthStatusUseCase(repository)
