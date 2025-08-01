@@ -68,7 +68,7 @@ async def update_vacancy(
 async def list_vacancies(
     use_case: Annotated[ListVacancyUseCase, Depends(list_vacancy_use_case)],
     search: Any = Query(None),
-    page: int = Query(default=1, gt=0),
+    page: int = Query(default=0, gte=0),
     page_size: int = Query(default=10, le=100, gt=0),
 ):
     response = await use_case.execute(page=page, page_size=page_size, search=search)

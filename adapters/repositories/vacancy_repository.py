@@ -107,7 +107,7 @@ class VacancyRepository(IVacancyRepository):
             query |= Q(manager__icontains=pagination.search)
             query |= Q(notes__icontains=pagination.search)
 
-        offset = (pagination.page - 1) * pagination.page_size
+        offset = pagination.page * pagination.page_size
 
         vacancies = (
             await Vacancy.filter(query).offset(offset).limit(pagination.page_size)
