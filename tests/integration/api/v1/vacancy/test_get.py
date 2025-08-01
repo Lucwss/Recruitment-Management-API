@@ -87,3 +87,32 @@ class TestGetVacancy:
 
         response = await self.http_client.get(f"/vacancy/{random_id}/")
         assert response.status_code == 404
+
+
+@pytest.mark.asyncio(loop_scope="class")
+class TestSystemStatusEndpoint:
+    """
+    Test suite for GET /api/v1/status endpoint.
+    """
+
+    http_client: AsyncClient = AsyncClient(base_url="http://0.0.0.0:8000/api/v1")
+
+    async def test_anonymous_user_can_retrieve_system_status(self):
+        response = await self.http_client.get("/health/status/")
+        assert response.status_code == 200
+
+        body = response.json()
+        assert body is not None
+
+        payload = body.get("payload")
+
+        updated_at = payload.get("updated_at")
+        assert updated_at is not None
+
+        dependencies = payload.get("dependencies", {})
+        database = dependencies.get("database", {})
+        assert database is not None
+
+        assert database.get("version") == 16.9
+        assert database.get("max_connections") == 100
+        assert database.get("opened_connections") == 1
