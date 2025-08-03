@@ -10,8 +10,8 @@ class Pagination(BaseModel):
     Pagination model representing the pagination in the application.
     """
 
-    page: int = Field(ge=1, default=1)
-    page_size: int = Field(ge=1, le=100, default=10)
+    page: int = Field(ge=0, default=0)
+    page_size: int = Field(ge=5, le=100, default=10)
     search: Any = Field(None)
 
     model_config = ConfigDict(
