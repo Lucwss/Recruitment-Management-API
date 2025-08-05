@@ -36,7 +36,9 @@ class VacancyRepository(IVacancyRepository):
 
         return None
 
-    async def get_summary_of_vacancies_by_sector(self, sector: str) -> List[VacancyOutput]:
+    async def get_summary_of_vacancies_by_sector(
+        self, sector: str
+    ) -> List[VacancyOutput]:
 
         if not sector:
             return []
@@ -51,8 +53,6 @@ class VacancyRepository(IVacancyRepository):
         ]
 
         return list_response
-
-
 
     async def create_vacancy(self, vacancy_data: VacancyInput) -> VacancyOutput:
         vacancy_data_as_dict = vacancy_data.model_dump()

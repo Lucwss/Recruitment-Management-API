@@ -5,7 +5,11 @@ from application.errors.media import NotFoundPdfMediaToGenerate
 from application.interfaces.usecase import UseCase
 from domain.interfaces.pdf_generator import IPDFGenerator
 from domain.interfaces.vacancy_repository import IVacancyRepository
-from web.http_response_schema import HttpResponse, HttpResponseSchema, DefaultFileResponse
+from web.http_response_schema import (
+    DefaultFileResponse,
+    HttpResponse,
+    HttpResponseSchema,
+)
 
 
 class DownloadVacancySummaryUseCase(UseCase):
@@ -26,17 +30,17 @@ class DownloadVacancySummaryUseCase(UseCase):
     async def execute(self, sector: str) -> DefaultFileResponse | HttpResponse:
 
         try:
-             summary = await self.repository.get_summary_of_vacancies_by_sector(sector)
+            summary = await self.repository.get_summary_of_vacancies_by_sector(sector)
 
-             generated_pdf = self.pdf_adapter.generate_pdf(summary)
+            generated_pdf = self.pdf_adapter.generate_pdf(summary)
 
-             media_pdf_output = MediaPdfOutput(
-                 path=generated_pdf,
-                 media_type="application/pdf",
-                 file_name=f"vacancy_summary_{sector}.pdf"
-             )
+            media_pdf_output = MediaPdfOutput(
+                path=generated_pdf,
+                media_type="application/pdf",
+                file_name=f"vacancy_summary_{sector}.pdf",
+            )
 
-             return HttpResponseSchema.ok_file_response(media_pdf_output)
+            return HttpResponseSchema.ok_file_response(media_pdf_output)
 
         except NotFoundPdfMediaToGenerate as e:
             return HttpResponseSchema.not_found(e)

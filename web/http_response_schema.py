@@ -9,6 +9,7 @@ class HttpResponse(BaseModel):
     status_code: int
     payload: Any
 
+
 class DefaultFileResponse(BaseModel):
     """
     Default file response schema.
@@ -110,7 +111,6 @@ class HttpResponseSchema:
         """
 
         return DefaultFileResponse(status_code=200, media=media)
-
 
     @staticmethod
     def created(data: Any):

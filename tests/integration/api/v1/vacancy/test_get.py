@@ -123,6 +123,7 @@ class TestSystemStatusEndpoint:
         assert database.get("max_connections") == 100
         assert database.get("opened_connections") == 1
 
+
 @pytest.mark.asyncio(loop_scope="class")
 class TestDownloadSummaryEndpoint:
     """
@@ -132,17 +133,15 @@ class TestDownloadSummaryEndpoint:
     http_client: AsyncClient = AsyncClient(base_url="http://0.0.0.0:8000/api/v1")
 
     async def test_download_summary(self):
-        response = await self.http_client.get("/vacancy/summary/download/", params=
-        {
-            "sector": "IT"
-        })
+        response = await self.http_client.get(
+            "/vacancy/summary/download/", params={"sector": "IT"}
+        )
 
         assert response.status_code == 200
 
     async def test_not_found_download_summary(self):
-        response = await self.http_client.get("/vacancy/summary/download/", params=
-        {
-            "sector": "asrgrçksudbfgd"
-        })
+        response = await self.http_client.get(
+            "/vacancy/summary/download/", params={"sector": "asrgrçksudbfgd"}
+        )
 
         assert response.status_code == 404

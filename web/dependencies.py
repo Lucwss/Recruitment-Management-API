@@ -15,12 +15,14 @@ from domain.usecases.list_vacancy import ListVacancyUseCase
 from domain.usecases.simulate_vacancy_costs import SimulateVacancyCostsUseCase
 from domain.usecases.update_vacancy import UpdateVacancyUseCase
 
+
 def reportlab_pdf_adapter():
     """
     function that injects the dependencies for ReportLabPDFAdapter
     """
 
     return ReportLabAdapter()
+
 
 def vacancy_repository():
     """
@@ -106,6 +108,7 @@ def simulate_vacancy_costs_use_case(
     """
 
     return SimulateVacancyCostsUseCase(repository)
+
 
 def download_vacancy_summary_costs_use_case(
     repository: Annotated[VacancyRepository, Depends(vacancy_repository)],

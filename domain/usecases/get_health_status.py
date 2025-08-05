@@ -1,5 +1,4 @@
 import traceback
-from pprint import pprint
 
 from application.dto.health import HealthStatusOutput
 from application.interfaces.usecase import UseCase

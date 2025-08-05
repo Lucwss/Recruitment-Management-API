@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class MediaPdfOutput(BaseModel):
     """
     Output schema for a PDF media file.
