@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import List
 from uuid import UUID
 
 from tortoise.contrib.pydantic import pydantic_model_creator
@@ -34,6 +35,24 @@ class VacancyRepository(IVacancyRepository):
             return VacancyOutput(**found_vacancy_in_database.model_dump())
 
         return None
+
+    async def get_summary_of_vacancies_by_sector(self, sector: str) -> List[VacancyOutput]:
+
+        if not sector:
+            return []
+
+        query = Vacancy.filter(sector__iexact=sector)
+
+        vacancies = await query.all()
+
+        list_response = [
+            VacancyOutput(**(await VacancyPydantic.from_tortoise_orm(v)).model_dump())
+            for v in vacancies
+        ]
+
+        return list_response
+
+
 
     async def create_vacancy(self, vacancy_data: VacancyInput) -> VacancyOutput:
         vacancy_data_as_dict = vacancy_data.model_dump()
