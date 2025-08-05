@@ -21,6 +21,8 @@ async def setup_vacancy(request):
     request.cls.http_client = http_client
 
     payload_input = generate_fake_vacancy_data()
+    payload_input["sector"] = "IT"
+
     response = await http_client.post("/vacancy/", json=payload_input)
     assert response.status_code == 201
 
@@ -120,3 +122,26 @@ class TestSystemStatusEndpoint:
         assert database.get("version") == 16.9
         assert database.get("max_connections") == 100
         assert database.get("opened_connections") == 1
+
+
+@pytest.mark.asyncio(loop_scope="class")
+class TestDownloadSummaryEndpoint:
+    """
+    Test suite for GET /api/v1/vacancy/summary endpoint.
+    """
+
+    http_client: AsyncClient = AsyncClient(base_url="http://0.0.0.0:8000/api/v1")
+
+    async def test_download_summary(self):
+        response = await self.http_client.get(
+            "/vacancy/summary/download/", params={"sector": "IT"}
+        )
+
+        assert response.status_code == 200
+
+    async def test_not_found_download_summary(self):
+        response = await self.http_client.get(
+            "/vacancy/summary/download/", params={"sector": "asrgrçksudbfgd"}
+        )
+
+        assert response.status_code == 404

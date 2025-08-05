@@ -1,12 +1,13 @@
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, Depends, Path, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from application.dto.simulation import CostSimulationInput
 from application.dto.vacancy import NotesInput, StatusToUpdate, VacancyInput
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
+from domain.usecases.download_vacancy_summary import DownloadVacancySummaryUseCase
 from domain.usecases.edit_vacancy_status import EditVacancyStatusUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
 from domain.usecases.list_vacancy import ListVacancyUseCase
@@ -15,12 +16,14 @@ from domain.usecases.update_vacancy import UpdateVacancyUseCase
 from web.dependencies import (
     create_vacancy_use_case,
     delete_vacancy_use_case,
+    download_vacancy_summary_costs_use_case,
     edit_vacancy_status_use_case,
     get_vacancy_use_case,
     list_vacancy_use_case,
     simulate_vacancy_costs_use_case,
     update_vacancy_use_case,
 )
+from web.http_response_schema import HttpResponse
 
 vacancy_router = APIRouter(prefix="/vacancy", tags=["Vacancies"])
 
@@ -73,6 +76,29 @@ async def list_vacancies(
 ):
     response = await use_case.execute(page=page, page_size=page_size, search=search)
     return JSONResponse(content=response.model_dump(), status_code=response.status_code)
+
+
+@vacancy_router.get(
+    "/summary/download/", summary="Route for downloading a vacancy summary."
+)
+async def download_vacancy_summary(
+    sector: Annotated[str, Query(...)],
+    use_case: Annotated[
+        DownloadVacancySummaryUseCase, Depends(download_vacancy_summary_costs_use_case)
+    ],
+):
+    response = await use_case.execute(sector=sector)
+
+    if isinstance(response, HttpResponse):
+        return JSONResponse(
+            content=response.model_dump(), status_code=response.status_code
+        )
+
+    return FileResponse(
+        path=response.media.path,
+        media_type=response.media.media_type,
+        filename=response.media.file_name,
+    )
 
 
 @vacancy_router.patch(

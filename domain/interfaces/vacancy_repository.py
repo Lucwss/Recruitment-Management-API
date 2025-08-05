@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from application.dto.pagination import Pagination, PaginationResponse
 from application.dto.simulation import CostSimulationInput, CostSimulationOutput
@@ -50,6 +51,13 @@ class IVacancyRepository(ABC):
         optional_notes: NotesInput = None,
     ) -> VacancyOutput | None:
         """Edit an existing vacancy status."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def get_summary_of_vacancies_by_sector(
+        self, sector: str
+    ) -> List[VacancyOutput]:
+        """Get a summary of vacancies."""
         raise NotImplementedError()
 
     @abstractmethod

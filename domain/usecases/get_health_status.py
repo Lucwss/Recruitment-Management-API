@@ -1,5 +1,4 @@
 import traceback
-from pprint import pprint
 
 from application.dto.health import HealthStatusOutput
 from application.interfaces.usecase import UseCase
@@ -25,9 +24,6 @@ class GetHealthStatusUseCase(UseCase):
         try:
             result: HealthStatusOutput = await self.repository.check_database_health()
             result_as_dict = result.model_dump()
-
-            pprint(result_as_dict)
-
             return HttpResponseSchema.ok(result_as_dict)
         except Exception as e:
             traceback.print_exc()

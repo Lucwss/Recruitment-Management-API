@@ -2,16 +2,26 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from adapters.libs.reportlab_adapter import ReportLabAdapter
 from adapters.repositories.health_repository import HealthRepository
 from adapters.repositories.vacancy_repository import VacancyRepository
 from domain.usecases.create_vacancy import CreateVacancyUseCase
 from domain.usecases.delete_vacancy import DeleteVacancyUseCase
+from domain.usecases.download_vacancy_summary import DownloadVacancySummaryUseCase
 from domain.usecases.edit_vacancy_status import EditVacancyStatusUseCase
 from domain.usecases.get_health_status import GetHealthStatusUseCase
 from domain.usecases.get_vacancy import GetVacancyUseCase
 from domain.usecases.list_vacancy import ListVacancyUseCase
 from domain.usecases.simulate_vacancy_costs import SimulateVacancyCostsUseCase
 from domain.usecases.update_vacancy import UpdateVacancyUseCase
+
+
+def reportlab_pdf_adapter():
+    """
+    function that injects the dependencies for ReportLabPDFAdapter
+    """
+
+    return ReportLabAdapter()
 
 
 def vacancy_repository():
@@ -98,6 +108,17 @@ def simulate_vacancy_costs_use_case(
     """
 
     return SimulateVacancyCostsUseCase(repository)
+
+
+def download_vacancy_summary_costs_use_case(
+    repository: Annotated[VacancyRepository, Depends(vacancy_repository)],
+    pdf_adapter: Annotated[ReportLabAdapter, Depends(reportlab_pdf_adapter)],
+) -> DownloadVacancySummaryUseCase:
+    """
+    function that injects the dependencies for DownloadVacancySummaryUseCase
+    """
+
+    return DownloadVacancySummaryUseCase(repository, pdf_adapter)
 
 
 def get_health_status_use_case(

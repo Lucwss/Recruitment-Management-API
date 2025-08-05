@@ -10,6 +10,15 @@ class HttpResponse(BaseModel):
     payload: Any
 
 
+class DefaultFileResponse(BaseModel):
+    """
+    Default file response schema.
+    """
+
+    media: Any
+    status_code: int = 200
+
+
 class HttpResponseSchema:
     """
     Helper class for HTTP responses.
@@ -94,6 +103,14 @@ class HttpResponseSchema:
         """
 
         return HttpResponse(status_code=200, payload=data)
+
+    @staticmethod
+    def ok_file_response(media: Any) -> DefaultFileResponse:
+        """
+        This method treats a successful file response from server
+        """
+
+        return DefaultFileResponse(status_code=200, media=media)
 
     @staticmethod
     def created(data: Any):
